@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sentinel-surveillance
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sentinel_db
+    username: postgres
+    password: password # Change in production!
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    # Hibernate 6 automatically handles JSONB, but we set dialect explicitly for clarity
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update # Use 'validate' in production with Flyway
+
+  # Multipart Upload Limits (for large video files)
+  servlet:
+    multipart:
+      max-file-size: 2GB
+      max-request-size: 2GB
+
+# Custom Application Properties
+app:
+  security:
+    # 32-character AES key for Database Column Encryption
+    # In prod, load this from Env Var: ${DB_ENCRYPTION_KEY}
+    db-encryption-key: "12345678901234567890123456789012" 
+    jwt-secret: "verySecretKeyForJwtSigningMustBeLongEnoughHS256"
+    jwt-expiration-ms: 86400000 # 24 hours
+  
+  storage:
+    root-path: "./sentinel-storage" # Where encrypted videos are saved

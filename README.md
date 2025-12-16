@@ -3,7 +3,7 @@
 **Version:** 1.0.0-SNAPSHOT  
 **Status:** Phase 2 Complete (Real-Time AI Pipeline Operational)
 
-Sentinel is a converged security platform that combines **Spring Boot** (Backend), **JavaFX** (Frontend), and **Deep Java Library (DJL)** (AI) into a single, high-performance desktop application. It performs real-time object detection on video streams using the **YOLOv8** architecture running on the **ONNX Runtime** engine.
+Sentinel is a converged security platform that combines **Spring Boot** (Backend), **JavaFX** (Frontend), and **Deep Java Library (DJL)** (AI) into a single, high-performance desktop application. It performs real-time object detection on video streams using the **YOLOv8** architecture running on the **ONNX Runtime** engine. It's currently an experimental project supposedly for personal project highlighting.
 
 ---
 
@@ -48,3 +48,12 @@ Start the PostgreSQL container using the credentials defined in `application.yml
 
 ```bash
 docker run --name sentinel-db -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_DB=sentinel_db -d postgres:15
+
+commit:
+
+development-note-report:
+	17:42 16/12/2025
+
+]JSONB Testing: The DetectionEventRepositoryTest uses a real PostgreSQL instance via Docker. This is the only reliable way to test PostgreSQL-specific JSON operators like ->>. Ensure Docker is running when executing tests.
+
+AttributeEncryptor: I included a test for this component assuming it follows the standard javax.persistence.AttributeConverter interface. If you haven't implemented the class yet, this test defines the specification you need to build (encrypt string -> base64, decrypt base64 -> string). 

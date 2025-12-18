@@ -198,7 +198,9 @@ curl http://localhost:8080/actuator/metrics/sentinel.throttle.interval
 
 ## 📝 License
 
-[Specify your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 hyukiody
 
 ---
 

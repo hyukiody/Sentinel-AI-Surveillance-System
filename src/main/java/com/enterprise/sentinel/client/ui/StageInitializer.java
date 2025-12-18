@@ -2,6 +2,7 @@ package com.enterprise.sentinel.client.ui;
 
 import com.enterprise.sentinel.client.StageReadyEvent;
 import com.enterprise.sentinel.service.ingestion.FileIngestionService;
+import com.enterprise.sentinel.service.security.AuditLogger;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Menu;
@@ -15,17 +16,19 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.UUID;
 import com.enterprise.sentinel.service.analysis.VideoProcessor;
 @Component
 public class StageInitializer implements ApplicationListener<StageReadyEvent> {
 
     private final FileIngestionService fileIngestionService;
-    private final VideoProcessor videoProcessor; // ADD
+    private final VideoProcessor videoProcessor;
+    private final AuditLogger auditLogger;
 
-    // Spring dependency injection works here!
-    public StageInitializer(FileIngestionService fileIngestionService, VideoProcessor videoProcessor) {
+    public StageInitializer(FileIngestionService fileIngestionService, VideoProcessor videoProcessor, AuditLogger auditLogger) {
         this.fileIngestionService = fileIngestionService;
         this.videoProcessor = videoProcessor;
+        this.auditLogger = auditLogger;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
 
             dialog.showAndWait().ifPresent(url -> {
                 try {
-                    // Just play it directly via our updated View
+                    auditLogger.logDataAccess("operator", "RTSP_STREAM", "Connected to: " + url);
                     System.out.println("📡 Connecting to Stream: " + url);
                     videoView.play(url);
                 } catch (Exception ex) {
@@ -87,7 +90,7 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
                 try {
-                    // Use Backend Service to validate/prepare
+                    auditLogger.logViewVideo("operator", UUID.randomUUID(), selectedFile.getName());
                     String mrl = fileIngestionService.prepareFileForPlayback(selectedFile);
                     System.out.println("▶ Playing: " + mrl);
                     videoView.play(mrl);

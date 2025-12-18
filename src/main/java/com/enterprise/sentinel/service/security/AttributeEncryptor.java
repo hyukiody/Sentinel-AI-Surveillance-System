@@ -15,20 +15,37 @@ import java.util.Base64;
 public class AttributeEncryptor implements AttributeConverter<String, String> {
 
     private static final String AES = "AES";
+    private static final String ENV_SECRET_KEY = "SENTINEL_SECRET_KEY";
     
     // Injected from properties, with a default for dev/test to prevent null pointers
     @Value("${sentinel.security.secret-key:x/A?D(G+KbPeShVmYq3t6w9z$B&E)H@M}")
-    private String secretKey;
+    private String secretKeyProperty;
 
     private Key key;
     private Cipher cipher;
 
     /**
      * Initializes the cipher and key. 
+     * Priority:
+     * 1. Environment variable SENTINEL_SECRET_KEY (production - from vault)
+     * 2. Application property sentinel.security.secret-key (development)
+     * 3. Hardcoded default (tests only)
+     * 
      * Called automatically by Spring or manually in tests.
      */
     public void init() {
         try {
+            // Load secret key with priority order
+            String secretKey = System.getenv(ENV_SECRET_KEY);
+            if (secretKey == null || secretKey.trim().isEmpty()) {
+                secretKey = secretKeyProperty;
+                if (secretKey == null) {
+                    throw new IllegalStateException(
+                            "No encryption key found. Set SENTINEL_SECRET_KEY environment variable or " +
+                            "sentinel.security.secret-key property");
+                }
+            }
+
             // Ensure key length is valid (16, 24, 32 bytes). 
             // Using first 16 chars (128-bit) for simplicity if key is longer.
             // In prod, use full 32 bytes (256-bit).

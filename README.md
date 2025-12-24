@@ -1,9 +1,9 @@
-# Sentinel AI Surveillance System
+# eyeOSurveillance system
 
 **Version:** 1.0.0-SNAPSHOT  
 **Status:** Phase 2 Complete (Real-Time AI Pipeline Operational)
 
-Sentinel is a converged security platform that combines **Spring Boot** (Backend), **JavaFX** (Frontend), and **Deep Java Library (DJL)** (AI) into a single, high-performance desktop application. It performs real-time object detection on video streams using the **YOLOv8** architecture running on the **ONNX Runtime** engine. It's currently an experimental project supposedly for personal project highlighting.
+eyeOSurveillance system performs real-time video detection using the **YOLOv8** architecture running on the **ONNX Runtime** engine. It's currently an experimental project supposedly for personal project highlighting.
 
 ---
 

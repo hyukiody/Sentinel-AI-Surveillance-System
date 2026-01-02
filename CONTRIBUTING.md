@@ -1,104 +1,255 @@
-# Contributing to eyeOSurveillance System
+# Contributing to Sentinel AI Surveillance System
 
-Thank you for your interest in contributing to the eyeOSurveillance System! We welcome contributions from the community.
+Thank you for your interest in contributing to Sentinel! This document provides guidelines and instructions for contributors.
 
-## How to Contribute
+## 📋 Table of Contents
 
-### Reporting Bugs
+- [Code of Conduct](#code-of-conduct)
+- [Getting Started](#getting-started)
+- [Development Setup](#development-setup)
+- [Making Changes](#making-changes)
+- [Pull Request Process](#pull-request-process)
+- [Coding Standards](#coding-standards)
+- [Testing Guidelines](#testing-guidelines)
 
-If you find a bug, please create an issue with:
-- A clear, descriptive title
-- Steps to reproduce the issue
-- Expected vs actual behavior
-- Your environment (OS, Java version, etc.)
-- Screenshots if applicable
-
-### Suggesting Enhancements
-
-We love to hear your ideas! Please create an issue with:
-- A clear description of the enhancement
-- Why this would be useful
-- Any implementation ideas you might have
-
-### Pull Requests
-
-1. **Fork the repository** and create your branch from `main`
-2. **Follow the coding style** used in the project
-3. **Write clear commit messages** that describe your changes
-4. **Add tests** for any new functionality
-5. **Update documentation** as needed
-6. **Ensure all tests pass** before submitting
-
-#### Development Setup
-
-```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/eyeOSurveillance-System.git
-cd eyeOSurveillance-System
-
-# Install dependencies
-mvn clean install
-
-# Run tests
-mvn test
-```
-
-#### Code Style Guidelines
-
-- Follow standard Java conventions
-- Use meaningful variable and method names
-- Add comments for complex logic
-- Keep methods focused and concise
-- Write unit tests for new features
-
-#### Commit Message Format
-
-```
-<type>: <subject>
-
-<body>
-
-<footer>
-```
-
-Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-
-Example:
-```
-feat: add support for RTSP stream authentication
-
-Added username/password parameters to RTSP configuration
-to support authenticated camera streams.
-
-Closes #123
-```
-
-### Testing
-
-Before submitting a pull request:
-
-```bash
-# Run all tests
-mvn test
-
-# Build the project
-mvn clean package
-```
-
-### Code Review Process
-
-1. Maintainers will review your PR
-2. Address any requested changes
-3. Once approved, your PR will be merged
+---
 
 ## Code of Conduct
 
-Please note that this project is released with a [Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+This project adheres to professional standards. Please be respectful and constructive in all interactions.
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+Before contributing, ensure you have:
+
+- **Java JDK 21** or later
+- **Maven 3.8+**
+- **Docker** (for PostgreSQL and Testcontainers)
+- **VLC Media Player** (64-bit) for video features
+- **Git** for version control
+
+### Fork & Clone
+
+1. Fork the repository on GitHub
+2. Clone your fork:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/Sentinel-AI-Surveillance-System.git
+   cd Sentinel-AI-Surveillance-System
+   ```
+3. Add upstream remote:
+   ```bash
+   git remote add upstream https://github.com/ORIGINAL_OWNER/Sentinel-AI-Surveillance-System.git
+   ```
+
+---
+
+## Development Setup
+
+### 1. Database Setup
+
+Start PostgreSQL with Docker:
+```bash
+docker run --name sentinel-db -p 5432:5432 \
+  -e POSTGRES_PASSWORD=password \
+  -e POSTGRES_DB=sentinel_db \
+  -d postgres:15
+```
+
+### 2. Build the Project
+
+```bash
+mvn clean install
+```
+
+### 3. Run Tests
+
+```bash
+# All tests
+mvn test
+
+# Specific test class
+mvn test -Dtest=AlertEngineTest
+
+# Integration tests only
+mvn test -Dtest=*IntegrationTest
+```
+
+### 4. Run the Application
+
+```bash
+mvn spring-boot:run
+```
+
+---
+
+## Making Changes
+
+### Branch Naming
+
+Use descriptive branch names:
+- `feature/add-motion-detection`
+- `bugfix/fix-video-buffer-leak`
+- `docs/update-api-documentation`
+- `refactor/improve-alert-engine`
+
+### Commit Messages
+
+Follow conventional commits:
+```
+type(scope): description
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `refactor`: Code refactoring
+- `test`: Adding tests
+- `chore`: Maintenance
+
+**Examples:**
+```
+feat(alert): add severity-based alert filtering
+
+fix(video): resolve buffer overflow in RTSP stream
+
+docs(readme): update installation instructions
+
+test(repository): add integration tests for JSONB queries
+```
+
+---
+
+## Pull Request Process
+
+1. **Update your fork:**
+   ```bash
+   git fetch upstream
+   git rebase upstream/main
+   ```
+
+2. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Make changes and test:**
+   ```bash
+   mvn clean test
+   ```
+
+4. **Push and create PR:**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+5. **PR Requirements:**
+   - All tests pass
+   - Code follows project style
+   - Documentation updated (if applicable)
+   - Clear description of changes
+
+---
+
+## Coding Standards
+
+### Java Style
+
+- **Formatting:** Use IDE formatter (IntelliJ/Eclipse defaults)
+- **Naming:** 
+  - Classes: `PascalCase`
+  - Methods/Variables: `camelCase`
+  - Constants: `UPPER_SNAKE_CASE`
+- **Annotations:** Use Lombok where appropriate (`@Slf4j`, `@RequiredArgsConstructor`)
+
+### Architecture Principles
+
+1. **Fail-Safe Design:**
+   ```java
+   public void process(Input input) {
+       // Always validate input
+       if (input == null) {
+           LOGGER.warn("Received null input");
+           return;
+       }
+       
+       try {
+           // Main logic
+       } catch (Exception e) {
+           // Error isolation - don't propagate
+           LOGGER.error("Processing failed", e);
+       }
+   }
+   ```
+
+2. **Thread Safety:**
+   - Use `AtomicReference`/`AtomicLong` for shared state
+   - Use `@Transactional` for database operations
+   - Use `Platform.runLater()` for JavaFX updates
+
+3. **Dependency Injection:**
+   - Constructor injection preferred
+   - Use `@RequiredArgsConstructor` with final fields
+
+### Documentation
+
+- Add Javadoc for public methods
+- Include `@param`, `@return`, `@throws` where applicable
+- Document complex algorithms
+
+---
+
+## Testing Guidelines
+
+### Test Structure
+
+```java
+@Test
+void testMethodName_givenCondition_expectedBehavior() {
+    // Given
+    Input input = createTestInput();
+    
+    // When
+    Result result = service.process(input);
+    
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.getValue()).isEqualTo(expected);
+}
+```
+
+### Test Categories
+
+| Type | Framework | Purpose |
+|------|-----------|---------|
+| Unit | JUnit 5 + Mockito | Isolated component testing |
+| Integration | Testcontainers | Real database testing |
+| E2E | Spring Boot Test | Full pipeline validation |
+
+### Required Tests
+
+- New features must include unit tests
+- Database changes require integration tests
+- Critical paths need E2E coverage
+
+---
 
 ## Questions?
 
-Feel free to open an issue with your question, and we'll do our best to help!
+If you have questions, please:
 
-## License
+1. Check existing documentation
+2. Search existing issues
+3. Open a new issue with the `question` label
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+---
+
+Thank you for contributing to Sentinel! 🚀

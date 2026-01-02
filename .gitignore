@@ -1,16 +1,12 @@
 # Compiled class files
 *.class
+target/
 
 # Log files
 *.log
+logs/
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files
+# Package files
 *.jar
 *.war
 *.nar
@@ -19,12 +15,8 @@
 *.tar.gz
 *.rar
 
-# Virtual machine crash logs
-hs_err_pid*
-replay_pid*
-
 # Maven
-target/
+.mvn/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -35,71 +27,52 @@ buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 
-# Gradle
-.gradle
-**/build/
-!src/**/build/
-gradle-app.setting
-!gradle-wrapper.jar
-!gradle-wrapper.properties
-.gradletasknamecache
-
-# Eclipse
+# IDE - Eclipse
 .classpath
+.factorypath
 .project
 .settings/
-bin/
-.metadata
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.loadpath
-.recommenders
-.factorypath
+*.launch
+.metadata/
 
-# IntelliJ IDEA
+# IDE - IntelliJ IDEA
 .idea/
 *.iws
 *.iml
 *.ipr
 out/
-.idea_modules/
 
-# NetBeans
+# IDE - NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-# VS Code
+# IDE - VS Code
 .vscode/
-*.code-workspace
 
-# macOS
+# OS
 .DS_Store
-.AppleDouble
-.LSOverride
-._*
-
-# Windows
 Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-[Dd]esktop.ini
-$RECYCLE.BIN/
 
-# Linux
+# Application
+sentinel-storage/
+*.onnx.tmp
+# Note: models/yolov8n.onnx is tracked because it's essential for the demo
+# The application can auto-download it, but including it ensures out-of-box functionality
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
 *~
 
-# Application specific
-application-local.yml
-application-dev.yml
-models/*.onnx
-*.mp4
-*.avi
-*.mkv
+# Environment
+.env
+.env.local
+*.env
+
+# Test reports (keep templates, ignore generated)
+target/surefire-reports/
+target/site/

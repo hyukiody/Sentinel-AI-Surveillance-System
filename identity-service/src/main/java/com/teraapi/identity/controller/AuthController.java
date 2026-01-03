@@ -28,35 +28,25 @@ public class AuthController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        try {
-            log.info("Login request for user: {}", request.getUsername());
-            AuthenticationResponse response = authenticationService.authenticate(request);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Login failed for user: {}", request.getUsername(), e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
+        log.info("Login request for user: {}", request.getUsername());
+        AuthenticationResponse response = authenticationService.authenticate(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody AuthenticationRequest request) {
-        try {
-            log.info("Register request for user: {}", request.getUsername());
-            User newUser = User.builder()
-                    .username(request.getUsername())
-                    .password(request.getPassword())
-                    .email(request.getUsername() + "@example.com")
-                    .isActive(true)
-                    .isLocked(false)
-                    .build();
-            
-            AuthenticationResponse response = authenticationService.register(newUser);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (Exception e) {
-            log.error("Registration failed for user: {}", request.getUsername(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody AuthenticationRequest request) {
+        log.info("Register request for user: {}", request.getUsername());
+        User newUser = User.builder()
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .email(request.getUsername() + "@example.com")
+                .isActive(true)
+                .isLocked(false)
+                .build();
+        
+        AuthenticationResponse response = authenticationService.register(newUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/health")

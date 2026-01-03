@@ -136,7 +136,7 @@ public class StreamRequestHandler {
         String requestData = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
 
         JsonObject request = gson.fromJson(requestData, JsonObject.class);
-        String protected Data = request.get("transformed").getAsString();
+        String protectedData = request.get("transformed").getAsString();
         String key = request.get("key").getAsString();
 
         try {

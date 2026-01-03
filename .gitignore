@@ -48,6 +48,40 @@ Thumbs.db
 
 # Private development directory
 .private/
+
+# Sensitive development documentation
+CHECKPOINT*.md
+DEPLOYMENT_TEST*.md
+DEV_*.md
+MASTER_DEPLOYMENT*.md
+PUBLIC_SHOWCASE*.md
+*-INTERNAL.md
+*_INTERNAL.md
+
+# Environment configuration templates with secrets
+.env.example
+**/.env.example
+
+# Database dumps and backups
+*.sql.gz
+*.dump
+backup/
+
+# Docker secrets
+secrets/
+*.secret
+
+# ========================================
+# Git Filter-Branch Artifacts
+# ========================================
+.git-rewrite/
+
+# ========================================
+# Public Repository Notes
+# ========================================
+# This repository follows the "Siloed Showcase Strategy"
+# Public repos contain isolated components only
+# Integration code remains in private repositories
 **/.private/
 PRIVATE_*.md
 **/PRIVATE_*.md

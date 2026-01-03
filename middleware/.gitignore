@@ -1,81 +1,10 @@
-# IDE Configuration
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-.DS_Store
-*.iml
-
-# Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-.m2/
-
-# Gradle
-.gradle/
-build/
-gradle-wrapper.jar
-.gradletasknamecache
-
-# Java
-*.class
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-*.log
-
-# Spring Boot
-.springBeans
-.sts4-cache/
-
-# Database
-*.db
-*.sqlite
-*.h2.db
-
-# Environment variables
+﻿target/
+node_modules/
 .env
 .env.local
-.env.*.local
-
-# Docker
-docker-compose.override.yml
-
-# Logs
-logs/
+*.class
+*.jar
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Dependencies
-node_modules/
-
-# Build outputs
-out/
-dist/
-build/
-
-# Test coverage
-coverage/
-.coverage
-.nyc_output
-
-# Application specific
-config/secrets/
-config/private/
-data/
-temp/
-*.pem
-*.key
-*.crt
+.DS_Store
+.idea/
+.vscode/

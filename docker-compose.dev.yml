@@ -1,0 +1,163 @@
+# ========================================
+# eyeO Platform - Development Checkpoint
+# ========================================
+# Simplified containerized deployment for testing all services
+
+version: '3.8'
+
+networks:
+  eyeo-dev:
+    driver: bridge
+
+volumes:
+  identity-db-data:
+  stream-db-data:
+  protected-storage:
+
+services:
+  # ==================== Databases ====================
+  
+  identity-db:
+    image: mysql:8.0
+    container_name: eyeo-identity-db
+    networks:
+      - eyeo-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: ${IDENTITY_DB_ROOT_PASSWORD:-rootpass123}
+      MYSQL_DATABASE: identity_db
+      MYSQL_USER: identity_user
+      MYSQL_PASSWORD: ${IDENTITY_DB_PASSWORD:-identity123}
+    volumes:
+      - identity-db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  stream-db:
+    image: mysql:8.0
+    container_name: eyeo-stream-db
+    networks:
+      - eyeo-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: ${STREAM_DB_ROOT_PASSWORD:-rootpass123}
+      MYSQL_DATABASE: stream_db
+      MYSQL_USER: stream_user
+      MYSQL_PASSWORD: ${STREAM_DB_PASSWORD:-stream123}
+    volumes:
+      - stream-db-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ==================== Backend Services ====================
+
+  identity-service:
+    build:
+      context: .
+      dockerfile: identity-service/Dockerfile
+    image: eyeo/identity-service:dev
+    container_name: eyeo-identity-service
+    networks:
+      - eyeo-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8081
+      DB_HOST: identity-db
+      DB_PORT: 3306
+      DB_NAME: identity_db
+      DB_USER: identity_user
+      DB_PASSWORD: ${IDENTITY_DB_PASSWORD:-identity123}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-DevSecretKey2024ForTesting012345678901234567890}
+      JWT_EXPIRATION: 86400000
+    ports:
+      - "8081:8081"
+    depends_on:
+      identity-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  stream-processing:
+    build:
+      context: .
+      dockerfile: stream-processing/Dockerfile
+    image: eyeo/stream-processing:dev
+    container_name: eyeo-stream-processing
+    networks:
+      - eyeo-dev
+    environment:
+      SERVER_PORT: 8082
+      DB_HOST: stream-db
+      DB_PORT: 3306
+      DB_NAME: stream_db
+      DB_USER: stream_user
+      DB_PASSWORD: ${STREAM_DB_PASSWORD:-stream123}
+      IDENTITY_SERVICE_URL: http://identity-service:8081
+    ports:
+      - "8082:8082"
+    depends_on:
+      stream-db:
+        condition: service_healthy
+      identity-service:
+        condition: service_healthy
+
+  data-core:
+    build:
+      context: .
+      dockerfile: data-core/Dockerfile
+    image: eyeo/data-core:dev
+    container_name: eyeo-data-core
+    networks:
+      - eyeo-dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 9090
+      EYEO_MASTER_KEY: ${EYEO_MASTER_KEY:-DevMasterKey2024ForTesting0123456789012}
+      STORAGE_PATH: /protected-storage
+      STORAGE_TYPE: LOCAL
+      IDENTITY_SERVICE_URL: http://identity-service:8081
+    volumes:
+      - protected-storage:/protected-storage
+    ports:
+      - "9090:9090"
+    depends_on:
+      identity-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==================== Frontend ====================
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_GATEWAY: http://localhost:8081
+        VITE_ENABLE_CLIENT_PROCESSING: "true"
+    image: eyeo/frontend:dev
+    container_name: eyeo-frontend
+    networks:
+      - eyeo-dev
+    ports:
+      - "5173:80"
+    depends_on:
+      - identity-service
+      - stream-processing
+      - data-core

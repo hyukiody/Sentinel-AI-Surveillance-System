@@ -53,7 +53,7 @@ services:
       - SERVER_PORT=8080
       - EYEO_DATA_CORE_URL=http://secure-io-engine:9090
       - EYEO_DEVICE_ID=${DEVICE_ID:-edge-node-001}
-      - EYEO_DEVICE_TOKEN=${DEVICE_TOKEN:-dev_token}
+      - EYEO_DEVICE_TOKEN=${DEVICE_TOKEN:?DEVICE_TOKEN must be set in .env file}
     networks:
       - secure_mesh_net
     depends_on:
@@ -73,7 +73,7 @@ services:
       - SERVER_PORT=8091
       - SPRING_DATASOURCE_URL=jdbc:postgresql://sentinel-db:5432/sentinel
       - SPRING_DATASOURCE_USERNAME=sentinel_user
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-change_this_password}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:?DB_PASSWORD must be set in .env file}
       - MICROKERNEL_URL=http://secure-io-engine:8080
     networks:
       - secure_mesh_net
@@ -162,9 +162,10 @@ services:
       - SERVER_PORT=8081
       - SPRING_DATASOURCE_URL=jdbc:mysql://identity-db:3306/teraapi_identity?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=identity_user
-      - SPRING_DATASOURCE_PASSWORD=${IDENTITY_DB_PASSWORD:-change_me}
-      - JWT_SECRET=${JWT_SECRET:-your-256-bit-secret-key-change-this-in-production}
+      - SPRING_DATASOURCE_PASSWORD=${IDENTITY_DB_PASSWORD:?IDENTITY_DB_PASSWORD must be set in .env file}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET must be set in .env file - minimum 256 bits required}
       - JWT_EXPIRATION=3600000
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
     networks:
       - secure_mesh_net
     ports:
@@ -183,10 +184,10 @@ services:
     image: mysql:8.0
     container_name: eyeo-identity-db
     environment:
-      - MYSQL_ROOT_PASSWORD=${IDENTITY_MYSQL_ROOT_PASSWORD:-change_me_root}
+      - MYSQL_ROOT_PASSWORD=${IDENTITY_MYSQL_ROOT_PASSWORD:?IDENTITY_MYSQL_ROOT_PASSWORD must be set in .env file}
       - MYSQL_DATABASE=teraapi_identity
       - MYSQL_USER=identity_user
-      - MYSQL_PASSWORD=${IDENTITY_DB_PASSWORD:-change_me}
+      - MYSQL_PASSWORD=${IDENTITY_DB_PASSWORD:?IDENTITY_DB_PASSWORD must be set in .env file}
     volumes:
       - identity-db-data:/var/lib/mysql
       - ./ops/scripts/init-identity-db.sql:/docker-entrypoint-initdb.d/01-init.sql

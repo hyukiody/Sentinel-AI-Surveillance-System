@@ -14,11 +14,19 @@ import java.nio.charset.StandardCharsets;
 public class StreamProcessingService {
 
     private static final int PORT = 8080;
-    private static final String JWT_SECRET = System.getenv("JWT_SECRET") != null
-            ? System.getenv("JWT_SECRET")
-            : "mySecretKeyForJWTTokenGenerationAndValidationPurposesOnly123456789!@#$%^&*";
-
+    private static final String JWT_SECRET = getRequiredEnvVar("JWT_SECRET");
     private static final String IDENTITY_INTROSPECTION_URL = System.getenv("IDENTITY_INTROSPECTION_URL");
+    
+    private static String getRequiredEnvVar(String name) {
+        String value = System.getenv(name);
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalStateException(
+                "CRITICAL: Environment variable '" + name + "' is required but not set. " +
+                "Please configure all required secrets before starting the application."
+            );
+        }
+        return value;
+    }
 
     private HttpServer server;
     private StreamRequestHandler requestHandler;
